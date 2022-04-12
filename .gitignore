@@ -1,0 +1,6 @@
+*
+
+!.gitignore
+!info.cemu.Cemu.json
+!info.cemu.Cemu.desktop
+!info.cemu.Cemu.appdata.xml
