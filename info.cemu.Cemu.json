@@ -1,0 +1,94 @@
+{
+	"id":"info.cemu.Cemu",
+	"sdk":"org.freedesktop.Sdk",
+	"runtime":"org.freedesktop.Platform",
+	"base":"org.winehq.Wine",
+	"base-version":"stable-21.08",
+	"runtime-version":"21.08",
+	"command":"cemu",
+	"finish-args":[
+		"--share=ipc",
+		"--socket=wayland",
+		"--socket=x11",
+		"--socket=pulseaudio",
+		"--share=network",
+		"--device=all",
+		"--allow=multiarch",
+		"--allow=devel",
+		"--allow=bluetooth",
+		"--env=WINEPREFIX=/var/data/wine",
+		"--filesystem=host"
+	],
+	"inherit-extensions":[
+		"org.freedesktop.Platform.GL32",
+		"org.freedesktop.Platform.Compat.i386",
+		"org.freedesktop.Platform.Compat.i386.Debug",
+		"org.winehq.Wine.gecko",
+		"org.winehq.Wine.mono",
+		"org.winehq.Wine.DLLs"
+	],
+	"modules":[
+		{
+			"name":"cemu",
+			"buildsystem":"simple",
+			"build-commands":[
+				"install apply_extra /app/bin",
+				"install cemu /app/bin",
+				"install /usr/bin/unzip /app/bin",
+				"unzip -qq cemu.zip",
+				"mv cemu_* /app/cemu",
+				"install -Dm644 --target-directory=/app/share/metainfo info.cemu.Cemu.appdata.xml",
+				"install -Dm644 --target-directory=/app/share info.cemu.Cemu.desktop",
+				"ln -s /var/config/cemu/settings.xml /app/cemu/settings.xml"
+			],
+			"sources":[
+				{
+					"type":"script",
+					"dest-filename":"apply_extra",
+					"commands":[
+						"mkdir -p export/share/icons/hicolor/512x512/apps",
+						"mv info.cemu.Cemu.png export/share/icons/hicolor/512x512/apps",
+						"mkdir -p export/share/applications",
+						"cp /app/share/info.cemu.Cemu.desktop export/share/applications",
+						"echo 'Icon=info.cemu.Cemu' >> export/share/applications/info.cemu.Cemu.desktop"
+					]
+				},
+				{
+					"type":"script",
+					"dest-filename":"cemu",
+					"commands":[
+						"mkdir -p /var/config/cemu",
+						"mkdir -p /var/data/cemu",
+						"[ ! -f /var/config/cemu/settings.xml ] && wget https://gist.github.com/Witherking25/f95a53d997a4889c741053eae9bbe330/raw/b753cbab9bd77868fc1fb0aca106d973aed7753c/settings.xml -O /var/config/cemu/settings.xml",
+						"cd /var/config/cemu # A location to write files like keys.txt",
+						"winetricks -q vcrun2017",
+						"exec /app/bin/wine64 /app/cemu/Cemu.exe \"$@\""
+					]
+				},
+				{
+					"type":"file",
+					"dest-filename":"cemu.zip",
+					"url":"http://cemu.info/releases/cemu_1.14.0.zip",
+					"size":5947016,
+					"sha256":"cdb6b9ffbb2e095453ae04f18bc9d0e325a4be9b11306754738e791724977181"
+
+				},
+				{
+					"type":"extra-data",
+					"url":"https://upload.wikimedia.org/wikipedia/commons/2/25/Cemu_Emulator_icon.png",
+					"sha256":"392d7dc4087d2c20b7f95fd7dc1ed7042e48a20c65774e12886444edd4e4e8d9",
+					"size":30549,
+					"filename":"info.cemu.Cemu.png"
+				},
+				{
+					"type":"file",
+					"path":"info.cemu.Cemu.appdata.xml"
+				},
+				{
+					"type":"file",
+					"path":"info.cemu.Cemu.desktop"
+				}
+			]
+		}
+	]
+}
