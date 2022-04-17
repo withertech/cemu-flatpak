@@ -2,8 +2,6 @@
 	"id":"info.cemu.Cemu",
 	"sdk":"org.freedesktop.Sdk",
 	"runtime":"org.freedesktop.Platform",
-	"base":"org.winehq.Wine",
-	"base-version":"stable-21.08",
 	"runtime-version":"21.08",
 	"command":"cemu",
 	"finish-args":[
@@ -14,32 +12,74 @@
 		"--share=network",
 		"--device=all",
 		"--allow=multiarch",
-		"--allow=devel",
 		"--allow=bluetooth",
 		"--env=WINEPREFIX=/var/data/wine",
 		"--filesystem=host"
 	],
-	"inherit-extensions":[
-		"org.freedesktop.Platform.GL32",
-		"org.freedesktop.Platform.Compat.i386",
-		"org.freedesktop.Platform.Compat.i386.Debug",
-		"org.winehq.Wine.gecko",
-		"org.winehq.Wine.mono",
-		"org.winehq.Wine.DLLs"
-	],
+	"add-extensions": {
+		"org.freedesktop.Platform.Compat.i386": {
+			"directory": "lib/i386-linux-gnu",
+			"version": "21.08"
+		},
+		"org.freedesktop.Platform.Compat.i386.Debug": {
+			"directory": "lib/debug/lib/i386-linux-gnu",
+			"version": "21.08",
+			"no-autodownload": true
+		},
+		"org.freedesktop.Platform.GL32": {
+			"directory": "lib/i386-linux-gnu/GL",
+			"version": "1.4",
+			"versions": "21.08;1.4",
+			"subdirectories": true,
+			"no-autodownload": true,
+			"autodelete": false,
+			"add-ld-path": "lib",
+			"merge-dirs": "vulkan/icd.d;glvnd/egl_vendor.d;OpenCL/vendors;lib/dri;lib/d3d;vulkan/explicit_layer.d;vulkan/implicit_layer.d",
+			"download-if": "active-gl-driver",
+			"enable-if": "active-gl-driver"
+		}
+	},
 	"modules":[
+		{
+			"name":"lynx",
+			"config-opts":[
+				"--with-ssl"
+			],
+			"make-install-args":[
+				"PREFIX=/app"
+			],
+			"sources":[
+				{
+					"type":"archive",
+					"url":"https://invisible-mirror.net/archives/lynx/tarballs/lynx2.8.9rel.1.zip",
+					"sha256":"db508863d5d8b0919b7e5ed2fa5d86fa9ecb01463b76bfc3446e12c69c059188"
+				}
+			]
+		},
+		{
+			"name":"proton",
+			"buildsystem":"simple",
+			"build-commands":[
+				"cd files && find . -type f -exec install -D \"{}\" \"/app/{}\" \\;"
+			],
+			"sources":[
+				{
+					"type":"archive",
+					"url":"https://github.com/GloriousEggroll/proton-ge-custom/releases/download/GE-Proton7-14/GE-Proton7-14.tar.gz",
+					"sha512":"3cbe99a2659dab1871cef0b50deb8cab4f101cc4d0531ed3d2cd7cf89dcee6aa08357b3d485e4260ab7a46af13bf6349daed16deb382cbadd5b2831ba7ad5503"
+				}
+			]
+		},
 		{
 			"name":"cemu",
 			"buildsystem":"simple",
 			"build-commands":[
 				"install apply_extra /app/bin",
+				"install cemu-updater /app/bin",
 				"install cemu /app/bin",
 				"install /usr/bin/unzip /app/bin",
-				"unzip -qq cemu.zip",
-				"mv cemu_* /app/cemu",
 				"install -Dm644 --target-directory=/app/share/metainfo info.cemu.Cemu.appdata.xml",
-				"install -Dm644 --target-directory=/app/share info.cemu.Cemu.desktop",
-				"ln -s /var/config/cemu/settings.xml /app/cemu/settings.xml"
+				"install -Dm644 --target-directory=/app/share info.cemu.Cemu.desktop"
 			],
 			"sources":[
 				{
@@ -55,23 +95,25 @@
 				},
 				{
 					"type":"script",
-					"dest-filename":"cemu",
+					"dest-filename":"cemu-updater",
 					"commands":[
-						"mkdir -p /var/config/cemu",
-						"mkdir -p /var/data/cemu",
-						"[ ! -f /var/config/cemu/settings.xml ] && wget https://gist.github.com/Witherking25/f95a53d997a4889c741053eae9bbe330/raw/b753cbab9bd77868fc1fb0aca106d973aed7753c/settings.xml -O /var/config/cemu/settings.xml",
-						"cd /var/config/cemu # A location to write files like keys.txt",
-						"winetricks -q vcrun2017",
-						"exec /app/bin/wine64 /app/cemu/Cemu.exe \"$@\""
+						"wget -qO - $(lynx -dump -listonly https://cemu.info/changelog.html | grep https | egrep '[0-9]+\.[0-9]+\.[0-9]\.zip' | awk '{print $2}' | head -n 1) > .tmp.zip",
+						"unzip -qq .tmp.zip -d /tmp/",
+						"rm .tmp.zip",
+						"cd /tmp/cemu_*",
+						"find -type d -exec mkdir -vp \"/var/data/cemu\"/{} \\; -or -exec mv -nv {} \"/var/data/cemu\"/{} \\;",
+						"cd /; rm -r /tmp/cemu_*"
 					]
 				},
 				{
-					"type":"file",
-					"dest-filename":"cemu.zip",
-					"url":"http://cemu.info/releases/cemu_1.14.0.zip",
-					"size":5947016,
-					"sha256":"cdb6b9ffbb2e095453ae04f18bc9d0e325a4be9b11306754738e791724977181"
-
+					"type":"script",
+					"dest-filename":"cemu",
+					"commands":[
+						"mkdir -p /var/data/cemu",
+						"cemu-updater",
+						"winetricks -q vcrun2017",
+						"exec /app/bin/wine64 /var/data/cemu/Cemu.exe \"$@\""
+					]
 				},
 				{
 					"type":"extra-data",
@@ -87,6 +129,21 @@
 				{
 					"type":"file",
 					"path":"info.cemu.Cemu.desktop"
+				}
+			]
+		},
+		{
+			"name": "bundle-setup",
+			"buildsystem": "simple",
+			"build-commands": [
+				"mkdir -p ${FLATPAK_DEST}/{,lib/debug/}lib/i386-linux-gnu/GL",
+				"install -Dm644 -t ${FLATPAK_DEST}/etc ld.so.conf"
+			],
+			"sources": [
+				{
+					"type": "file",
+					"dest-filename": "ld.so.conf",
+					"url": "data:/app/lib32%0A/app/lib/i386-linux-gnu%0A"
 				}
 			]
 		}
