@@ -43,7 +43,7 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     container:
-        image: bilelmoussaoui/flatpak-builder-github-actions
+        image: bilelmoussaoui/flatpak-github-actions:freedesktop-21.08
 #         image: freedesktopsdk/flatpak:21.08-x86_64
         options: --privileged
 
