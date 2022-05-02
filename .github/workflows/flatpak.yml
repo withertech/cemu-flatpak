@@ -43,7 +43,7 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     container:
-        image: bilelmoussaoui/flatpak-github-actions:freedesktop-21.08
+        image: freedesktopsdk/flatpak:21.08-x86_64
         options: --privileged
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -61,6 +61,6 @@ jobs:
       - name: Build and Upload
         run: |
           flatpak-builder --install-deps-from=flathub --force-clean --gpg-sign=597347D1434D8E68B3D72E71A892A7123B116051 --repo=repo builddir info.cemu.Cemu.json
-          flat-manager-client push --token $FLAT_MANAGER_TOKEN --commit --publish $(flat-manager-client create https://repo.withertech.com/flatpak/api/ main) repo/
+          flat-manager-client push --commit --publish $(flat-manager-client create https://repo.withertech.com/flatpak/api/ main) repo/
         env:
-          FLAT_MANAGER_TOKEN: ${{ secrets.FLAT_MANAGER_TOKEN }}
+          REPO_TOKEN: ${{ secrets.FLAT_MANAGER_TOKEN }}
