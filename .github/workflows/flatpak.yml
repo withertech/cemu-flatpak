@@ -57,11 +57,13 @@ jobs:
           echo -n "$GPG_SIGNING_KEY" | base64 --decode | gpg --import
         env:
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
-
-      # Runs a set of commands using the runners shell
+      - uses: suisei-cn/actions-download-file@v1
+        name: Download flat-manager-client
+        with:
+          url: "https://github.com/flatpak/flat-manager/raw/master/flat-manager-client"
+          target: .
       - name: Build and Upload
         run: |
-          wget https://github.com/flatpak/flat-manager/raw/master/flat-manager-client
           chmod +x ./flat-manager-client
           flatpak-builder --install-deps-from=flathub --force-clean --gpg-sign=597347D1434D8E68B3D72E71A892A7123B116051 --repo=repo builddir info.cemu.Cemu.json
           ./flat-manager-client push --commit --publish $(./flat-manager-client create https://repo.withertech.com/flatpak/api/ main) repo/
