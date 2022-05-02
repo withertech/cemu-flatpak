@@ -57,9 +57,14 @@ jobs:
           echo -n "$GPG_SIGNING_KEY" | base64 --decode | gpg --import
         env:
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
+      - name: Configure Flatpak Manager Token
+        run: |
+          echo "$FLAT_MANAGER_TOKEN" > token
+        env:
+          FLAT_MANAGER_TOKEN: ${{ secrets.FLAT_MANAGER_TOKEN }}
       - name: Build and Upload
         run: |
           flatpak-builder --install-deps-from=flathub --force-clean --gpg-sign=597347D1434D8E68B3D72E71A892A7123B116051 --repo=repo builddir info.cemu.Cemu.json
-          flat-manager-client --token "$FLAT_MANAGER_TOKEN" push --commit --publish $(flat-manager-client --token "$FLAT_MANAGER_TOKEN" create https://repo.withertech.com/flatpak/api/ main) repo/
+          flat-manager-client --token-file ./token push --commit --publish $(flat-manager-client --token-file ./token create https://repo.withertech.com/flatpak/api/ main) repo/
         env:
           FLAT_MANAGER_TOKEN: ${{ secrets.FLAT_MANAGER_TOKEN }}
