@@ -43,7 +43,7 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     container:
-        image: tinywrkb/flatpak-tools:latest
+        image: tilosp/flatpak-builder:latest
 #         image: freedesktopsdk/flatpak:21.08-x86_64
         options: --privileged
 
