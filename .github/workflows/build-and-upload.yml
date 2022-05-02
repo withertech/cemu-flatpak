@@ -16,28 +16,28 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
 
-  flatpak:
-    name: "Flatpak"
-    runs-on: ubuntu-latest
-    container:
-      image: bilelmoussaoui/flatpak-github-actions:gnome-40
-      options: --privileged
-    steps:
-    - uses: actions/checkout@v2
-    - uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v4
-      name: "Build"
-      with:
-        bundle: info.cemu.Cemu.flatpak
-        manifest-path: info.cemu.Cemu.json
-        cache-key: flatpak-builder-${{ github.sha }}
-    - uses: bilelmoussaoui/flatpak-github-actions/flat-manager@v3
-      name: "Deploy"
-      with:
-        repository: withertech
-        flat-manager-url: https://repo.withertech.com/flatpak/api/
-        token: "$FLAT_MANAGER_TOKEN"
-      env:
-        FLAT_MANAGER_TOKEN: ${{ secrets.FLAT_MANAGER_TOKEN }}
+#   flatpak:
+#     name: "Flatpak"
+#     runs-on: ubuntu-latest
+#     container:
+#       image: bilelmoussaoui/flatpak-github-actions:gnome-40
+#       options: --privileged
+#     steps:
+#     - uses: actions/checkout@v2
+#     - uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v4
+#       name: "Build"
+#       with:
+#         bundle: info.cemu.Cemu.flatpak
+#         manifest-path: info.cemu.Cemu.json
+#         cache-key: flatpak-builder-${{ github.sha }}
+#     - uses: bilelmoussaoui/flatpak-github-actions/flat-manager@v3
+#       name: "Deploy"
+#       with:
+#         repository: withertech
+#         flat-manager-url: https://repo.withertech.com/flatpak/api/
+#         token: "$FLAT_MANAGER_TOKEN"
+#       env:
+#         FLAT_MANAGER_TOKEN: ${{ secrets.FLAT_MANAGER_TOKEN }}
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
@@ -56,6 +56,7 @@ jobs:
 
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
-        run: |
+        uses: louib/flatpak-action@1.0.3
+        with: |
           flatpak-builder --install-deps-from=flathub --force-clean --gpg-sign=597347D1434D8E68B3D72E71A892A7123B116051 --repo=repo builddir info.cemu.Cemu.json
           flat-manager-client push --commit --publish $(flat-manager-client create https://repo.withertech.com/flatpak/api/ main) repo/
