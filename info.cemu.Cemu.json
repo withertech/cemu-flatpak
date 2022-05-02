@@ -44,7 +44,7 @@
 			"name":"proton",
 			"buildsystem":"simple",
 			"build-commands":[
-				"cd files && find . -type f -exec install -D \"{}\" \"/app/{}\" \\;"
+				"cd files && find . -type f -exec install -D \"{}\" \"${FLATPAK_DEST}/{}\" \\;"
 			],
 			"sources":[
 				{
@@ -73,12 +73,12 @@
 			"name":"cemu",
 			"buildsystem":"simple",
 			"build-commands":[
-				"install apply_extra /app/bin",
-				"install cemu-updater /app/bin",
-				"install cemu /app/bin",
-				"install /usr/bin/unzip /app/bin",
-				"install -Dm644 --target-directory=/app/share/metainfo info.cemu.Cemu.metainfo.xml",
-				"install -Dm644 --target-directory=/app/share info.cemu.Cemu.desktop"
+				"install apply_extra ${FLATPAK_DEST}/bin",
+				"install cemu-updater ${FLATPAK_DEST}/bin",
+				"install cemu ${FLATPAK_DEST}/bin",
+				"install /usr/bin/unzip ${FLATPAK_DEST}/bin",
+				"install -Dm644 --target-directory=${FLATPAK_DEST}/share/metainfo info.cemu.Cemu.metainfo.xml",
+				"install -Dm644 --target-directory=${FLATPAK_DEST}/share info.cemu.Cemu.desktop"
 			],
 			"sources":[
 				{
@@ -88,7 +88,7 @@
 						"mkdir -p export/share/icons/hicolor/512x512/apps",
 						"mv info.cemu.Cemu.png export/share/icons/hicolor/512x512/apps",
 						"mkdir -p export/share/applications",
-						"cp /app/share/info.cemu.Cemu.desktop export/share/applications",
+						"cp ${FLATPAK_DEST}/share/info.cemu.Cemu.desktop export/share/applications",
 						"echo 'Icon=info.cemu.Cemu' >> export/share/applications/info.cemu.Cemu.desktop"
 					]
 				},
