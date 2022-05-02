@@ -65,7 +65,7 @@
 					"type": "file",
 					"dest-filename": "winetricks",
 					"url": "https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks",
-					"sha256": "311c8c223bb83a7558b9e51197a9ccf7182bbd63849c64827b87bbc5f627f5cb"
+					"sha256": "d23dbdf84a2f75b0cbb9608f9ba9d65ee23947fdf71be76115c9eb066b3b3100"
 				}
 			]
 		},
