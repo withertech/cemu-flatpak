@@ -78,7 +78,8 @@
 				"install cemu ${FLATPAK_DEST}/bin",
 				"install /usr/bin/unzip ${FLATPAK_DEST}/bin",
 				"install -Dm644 --target-directory=${FLATPAK_DEST}/share/metainfo info.cemu.Cemu.metainfo.xml",
-				"install -Dm644 --target-directory=${FLATPAK_DEST}/share info.cemu.Cemu.desktop"
+				"echo 'Icon=info.cemu.Cemu' >> info.cemu.Cemu.desktop",
+				"install -Dm644 --target-directory=export/share/applications info.cemu.Cemu.desktop"
 			],
 			"sources":[
 				{
@@ -86,10 +87,7 @@
 					"dest-filename":"apply_extra",
 					"commands":[
 						"mkdir -p export/share/icons/hicolor/512x512/apps",
-						"mv info.cemu.Cemu.png export/share/icons/hicolor/512x512/apps",
-						"mkdir -p export/share/applications",
-						"cp ${FLATPAK_DEST}/share/info.cemu.Cemu.desktop export/share/applications",
-						"echo 'Icon=info.cemu.Cemu' >> export/share/applications/info.cemu.Cemu.desktop"
+						"mv info.cemu.Cemu.png export/share/icons/hicolor/512x512/apps"
 					]
 				},
 				{
