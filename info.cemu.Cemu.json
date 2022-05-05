@@ -73,23 +73,15 @@
 			"name":"cemu",
 			"buildsystem":"simple",
 			"build-commands":[
-				"install apply_extra ${FLATPAK_DEST}/bin",
 				"install cemu-updater ${FLATPAK_DEST}/bin",
 				"install cemu ${FLATPAK_DEST}/bin",
 				"install /usr/bin/unzip ${FLATPAK_DEST}/bin",
 				"install -Dm644 --target-directory=${FLATPAK_DEST}/share/metainfo info.cemu.Cemu.metainfo.xml",
 				"echo 'Icon=info.cemu.Cemu' >> info.cemu.Cemu.desktop",
-				"install -Dm644 --target-directory=export/share/applications info.cemu.Cemu.desktop"
+				"install -Dm644 --target-directory=${FLATPAK_DEST}/share/applications info.cemu.Cemu.desktop",
+				"install -Dm644 --target-directory=${FLATPAK_DEST}/share/icons/hicolor/512x512/apps info.cemu.Cemu.png"
 			],
 			"sources":[
-				{
-					"type":"script",
-					"dest-filename":"apply_extra",
-					"commands":[
-						"mkdir -p export/share/icons/hicolor/512x512/apps",
-						"mv info.cemu.Cemu.png export/share/icons/hicolor/512x512/apps"
-					]
-				},
 				{
 					"type":"script",
 					"dest-filename":"cemu-updater",
@@ -130,11 +122,10 @@
 					]
 				},
 				{
-					"type":"extra-data",
+					"type":"file",
 					"url":"https://upload.wikimedia.org/wikipedia/commons/2/25/Cemu_Emulator_icon.png",
 					"sha256":"392d7dc4087d2c20b7f95fd7dc1ed7042e48a20c65774e12886444edd4e4e8d9",
-					"size":30549,
-					"filename":"info.cemu.Cemu.png"
+					"dest-filename":"info.cemu.Cemu.png"
 				},
 				{
 					"type":"file",
